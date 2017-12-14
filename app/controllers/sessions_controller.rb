@@ -3,11 +3,12 @@ class SessionsController < ApplicationController
   end
 
   def create
-    user = User.find_by(email: params[:session][:email].downcase)#此處的session為params的其中一個key
+    @user = User.find_by(email: params[:session][:email].downcase)#此處的session為params的其中一個key
     
-    if user && user.authenticate(params[:session][:password])
-      log_in user#將session[:user_id]設定為user.id
-      redirect_to user#=user_path(user)
+    if @user && @user.authenticate(params[:session][:password])
+      log_in @user#將session[:user_id]設定為user.id
+      params[:session][:remember_me] == '1' ? remember(@user) : forget(@user) 
+      redirect_to @user#=user_path(user)
     else
       flash.now[:danger] = 'Invalid email/password combination'
       render :new
@@ -15,7 +16,7 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    log_out
+    log_out if logged_in?#只有登入的時候才能夠登出
     redirect_to root_url
   end
 end
