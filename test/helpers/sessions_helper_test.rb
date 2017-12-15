@@ -7,7 +7,7 @@ class SessionsHelperTest < ActionView::TestCase
     remember(@user)
   end
 
-  test "current_user returns right user when session is nil" do
+  test "current_user returns right user when session is nil" do#沒登入但是有remember_token的話也能登入
     assert_equal @user, current_user
     assert is_logged_in?
   end

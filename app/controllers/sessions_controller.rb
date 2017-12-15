@@ -8,7 +8,7 @@ class SessionsController < ApplicationController
     if @user && @user.authenticate(params[:session][:password])
       log_in @user#將session[:user_id]設定為user.id
       params[:session][:remember_me] == '1' ? remember(@user) : forget(@user) 
-      redirect_to @user#=user_path(user)
+      redirect_back_or @user#=user_path(user)
     else
       flash.now[:danger] = 'Invalid email/password combination'
       render :new
