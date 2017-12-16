@@ -15,7 +15,7 @@ module SessionsHelper
       @current_user ||= User.find_by(id: user_id) #find_by如果找不到會回傳nil,find則會回傳錯誤
     elsif (user_id = cookies.signed[:user_id])#如果cookies裡面有user_id的話便把值給user_id這個變數
       user = User.find_by(id: user_id)
-      if user && user.authenticated?(cookies[:remember_token])#如果cookies裡面的令牌資訊跟資料庫裡的摘要是一致的話
+      if user && user.authenticated?(:remember,cookies[:remember_token])#如果cookies裡面的令牌資訊跟資料庫裡的摘要是一致的話
         log_in user#就登入這個使用者
         @current_user = user#並且把current_user設定為現在的user
       end

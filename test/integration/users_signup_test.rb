@@ -16,14 +16,33 @@ class UsersSignupTest < ActionDispatch::IntegrationTest
     assert_select 'div.alert-danger'
   end
 
-  test "valid signup information" do
+  test "valid signup information with account activation" do
     get signup_path
-    assert_difference 'User.count', 1 do
-      post signup_path, params: { user: { name: "eggyy",
-                                  email: "eggyy1224@gmail.com",
-                                  password: "foobar",
-                                  password_confirmation: "foobar" } }
+    assert_difference 'User.count', 1 do#新增一個新user
+      post users_path, params: { user: { name:  "Example User",
+                                         email: "user@example.com",
+                                         password:              "password",
+                                         password_confirmation: "password" } }
     end
+    assert_equal 1, ActionMailer::Base.deliveries.size
+    user = assigns(:user)
+    assert_not user.activated?#確認新增的user處於未激活的狀態
+    #確認未激活以前不能登入
+    log_in_as user
+    assert_not is_logged_in?
+    #wrong token
+    get edit_account_activation_path("invalidtoken", email: user.email) 
+    assert_not is_logged_in?
+    #wrong email
+    get edit_account_activation_path(user.activation_token, email: "wrong email") 
+    assert_not is_logged_in?
+    #both right
+    get edit_account_activation_path(user.activation_token, email: user.email) 
+    assert user.reload.activated?
+
+
+
+
     follow_redirect!
     assert_template 'users/show'
     assert_not flash.empty?
