@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-  attr_accessor :remember_token, :activation_token#虛擬屬性（不是存在資料庫裡）
+  attr_accessor :remember_token, :activation_token, :reset_token#虛擬屬性（不是存在資料庫裡）
   before_save :downcase_email
   before_create :create_activation_digest#before_create只有使用new方法時會調用,before_save則是update時也會
   validates :name, presence: true, length: { maximum: 50 }
@@ -45,6 +45,20 @@ class User < ApplicationRecord
 
   def send_activation_email
     UserMailer.account_activation(self).deliver_now
+  end
+
+  def create_reset_digest
+    self.reset_token = User.new_token
+    
+    update_columns(reset_digest:  User.digest(reset_token), reset_sent_at: Time.zone.now)
+  end
+
+  def send_password_reset_email
+    UserMailer.password_reset(self).deliver_now
+  end
+
+  def password_reset_expired?
+    reset_sent_at < 2.hours.ago
   end
 
   private 
