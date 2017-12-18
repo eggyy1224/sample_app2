@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   attr_accessor :remember_token, :activation_token, :reset_token#虛擬屬性（不是存在資料庫裡）
+  has_many :microposts, dependent: :destroy
   before_save :downcase_email
   before_create :create_activation_digest#before_create只有使用new方法時會調用,before_save則是update時也會
   validates :name, presence: true, length: { maximum: 50 }
@@ -59,6 +60,10 @@ class User < ApplicationRecord
 
   def password_reset_expired?
     reset_sent_at < 2.hours.ago
+  end
+
+  def feed
+    Micropost.where("user_id=?", id)
   end
 
   private 
