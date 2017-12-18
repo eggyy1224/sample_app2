@@ -3,9 +3,9 @@ if Rails.env.production?
     config.fog_credentials = {
       # Amazon S3 的配置
       :provider              => 'AWS',
-      :aws_access_key_id     => ENV['AKIAIFQI56ZG4HIR4XLQ'],
-      :aws_secret_access_key => ENV['BG5QQYHJGuCV/cu1L67PqHoAvehlGgB3PhYYFBw']
+      :aws_access_key_id     => ENV['S3_ACCESS_KEY'],
+      :aws_secret_access_key => ENV['S3_SECRET_KEY']
     }
-    config.fog_directory     =  ENV['smaple-app']
+    config.fog_directory     =  ENV['S3_BUCKET']
   end
 end
